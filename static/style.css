@@ -1,0 +1,67 @@
+*{
+    font-family: "Nunito", sans-serif;
+}
+
+.center-and-space {
+    display: flex; /* Use Flexbox for layout */
+    flex-direction: column; /* Stack items vertically */
+    align-items: center; /* Center items horizontally */
+    justify-content: center; /* Center items vertically (if needed) */
+    margin: 0 auto; /* Optionally center the container itself if it has a set width */
+    max-width: 1200px; /* Maximum width of the container */
+    position: relative;
+  }
+  
+
+.connect_wallet_button{
+    background-color: #724EE9;
+    color: white;
+    text-decoration: none;
+    padding: 20px;
+    margin: 20px;
+    border-radius: 40px;
+}
+
+.model-containers {
+    display: block; /* Ensure the anchor behaves as a block-level element */
+
+    padding: 20px; /* Add some padding inside the border */
+    margin: 10px 0; /* Add some margin outside the border for spacing */
+    text-decoration: none; /* Remove the underline from the link */
+    color: black; /* Set text color */
+    border-radius: 10px; /* Optional: rounded corners */
+    box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+  }
+  
+  .model-containers:hover {
+    background-color: #f0f0f0; /* Light grey background on hover for visual feedback */
+    text-decoration: none; /* Ensure the underline does not reappear on hover */
+  }
+  
+  .models-wrapper {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* Create three columns */
+    grid-gap: 20px; /* Space between items */
+    padding: 20px; /* Padding around the grid */
+  }
+
+.model-title{
+    color: #724EE9;
+}
+
+.account-info {
+    position: absolute;
+    top: 0;
+    right: 0;
+    text-align: right;
+  }
+
+.disconnect-button{
+    display: inline-block; /* Or 'block' if you prefer it on a new line */
+  margin-top: 10px; /* Adjust spacing around the button */
+}
+
+.left-align{
+    text-align: left;
+    padding-top: 120px;
+}
