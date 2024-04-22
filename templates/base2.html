@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{%block title%}Home{%endblock%}</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div class="center-and-space info">
+      <div class="account-info">
+        <p>Account: <span id="account">Loading...</span></p>
+        <p>Balance: <span id="balance">Loading...</span></p>
+        <a href="/" class="connect_wallet_button disconnect-button"
+          >Disconnect Wallet</a
+        >
+      </div>
+    </div>
+    <div class="center-and-space">{% block content%} {%endblock%}</div>
+    <!-- <script src="{{url_for('static', filename='script.js')}}"></script> -->
+    <!-- Include Web3.js library -->
+    <script src="https://cdn.jsdelivr.net/npm/web3@1.5.0/dist/web3.min.js"></script>
+
+    <!-- Your JavaScript code -->
+    <script src="{{ url_for('static', filename='displayInfo.js') }}"></script>
+  </body>
+</html>

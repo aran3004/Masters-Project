@@ -1,12 +1,12 @@
-{%extends 'base.html'%} {%block title%}MNIST Dataset{%endblock%} {%block
+{%extends 'base2.html'%} {%block title%}MNIST Dataset{%endblock%} {%block
 content%}
-<div class="account-info">
-  <p>Account Key:</p>
-  <p>Balance:</p>
+<!-- <div class="account-info">
+  <p>Account: <span id="account"></span></p>
+  <p>Balance: <span id="balance"></span> ETH</p>
   <a href="/" class="connect_wallet_button disconnect-button"
     >Disconnect Wallet</a
   >
-</div>
+</div> -->
 <div class="left-align">
   <h2><strong class="model-title">MNIST Dataset</strong></h2>
   <p><em>Classification</em></p>
@@ -21,8 +21,43 @@ content%}
     establish a foundational model that can later be expanded to more complex
     datasets and challenges.
   </p>
-  <p><em>Last Contribution:</em></p>
+  <p>
+    <em>Last Contribution: {{last_updated}}</em>
+  </p>
+  <p>
+    <em>Number of Contributors: {{contributors}}</em>
+  </p>
+</div>
+<div>
+  <h1>Confusion Matrix</h1>
+  <table>
+    <thead>
+      <tr>
+        <th></th>
+        {% for class_num in range(10) %}
+        <th>Class {{ class_num }}</th>
+        {% endfor %}
+        <!-- Add more class headers as needed -->
+      </tr>
+    </thead>
+    <tbody>
+      {% for i, row in confusion_matrix %}
+      <tr>
+        <th>Class {{ i }}</th>
+        {% for value in row %}
+        <td>{{ value }}</td>
+        {% endfor %}
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
 </div>
 
 <a href="/contribute" class="connect_wallet_button">Contribute to Model</a>
+
+<!-- Include Web3.js library -->
+<script src="https://cdn.jsdelivr.net/npm/web3@1.5.0/dist/web3.min.js"></script>
+
+<!-- Your JavaScript code -->
+<script src="{{ url_for('static', filename='displayInfo.js') }}"></script>
 {%endblock%}

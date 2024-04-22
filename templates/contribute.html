@@ -1,3 +1,25 @@
-{%extends 'base.html'%} {%block title%}Contribute{%endblock%} {%block content%}
-<p>Here will be the contribution API</p>
+{%extends 'base2.html'%} {%block title%}Upload Data{%endblock%} {%block
+content%}
+<div class="login_page">
+  <h1 class="center">Upload your Data</h1>
+  <div class="uploaded_style container-styling">
+    <form id="dataForm" method="post" enctype="multipart/form-data">
+      <input type="hidden" id="clientAddress" name="clientAddress" />
+      <div class="center">
+        <label for="file" class="drop-container" id="dropcontainer"
+          >Upload Data:
+          <span class="drop-title">Drop Data Here</span>
+          or
+          <input type="file" id="file" name="file" accept=".csv" required />
+        </label>
+      </div>
+      <div>
+        <button class="link_button register form_button" type="submit">
+          Continue
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
 {%endblock%}
