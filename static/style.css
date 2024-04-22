@@ -11,7 +11,10 @@
     max-width: 1200px; /* Maximum width of the container */
     position: relative;
   }
-  
+
+.info{
+  height: 200px;
+}
 
 .connect_wallet_button{
     background-color: #724EE9;
@@ -64,4 +67,111 @@
 .left-align{
     text-align: left;
     padding-top: 120px;
+}
+
+table {
+  border-collapse: collapse;
+  width: 80%;
+  font-size: small;
+}
+
+th, td {
+  padding: 10px;
+  text-align: center;
+}
+
+tr:hover, td:hover {
+  background-color:#f2f2f2;
+}
+
+.uploaded_style{
+  border: #262626;
+  border-width: 10px;
+  box-shadow: 0 0 30px 8px rgba(0, 0, 0, 0.06);
+  padding: 10px;
+}
+
+.container-styling{
+  background-color: white;
+  width: 60vw;
+  padding: 30px;
+}
+
+.center{
+  display: flex;
+  justify-content: center;
+}
+
+.drop-container {
+  position: relative;
+  width: 100%;
+  display: flex;
+  gap: 10px;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 200px;
+  padding: 20px;
+  border-radius: 10px;
+  border: 2px dashed #555;
+  color: #444;
+  cursor: pointer;
+  transition: background-color 0.3s , border .3s;
+  margin-bottom: 20px;
+}
+
+.drop-container:hover {
+  background: #eee;
+  border-color: #262626;
+}
+
+.drop-container:hover .drop-title {
+  color: #222;
+}
+
+.drop-title {
+  color: #444;
+  font-size: 20px;
+  font-weight: bold;
+  text-align: center;
+  transition: color .3s;
+}
+
+.drop-container.drag-active {
+  background: #eee;
+  border-color: #111;
+}
+
+.drop-container.drag-active .drop-title {
+  color: #222;
+}
+
+.link_button{
+  font-size: 16px;
+  text-decoration: none;
+  padding: 10px;
+  margin: 10px;
+  background-color: white;
+  border-style: solid;
+  border-color: #8c8c8c;
+  border-radius: 10px;
+  color: #262626;
+  font-weight: 400;
+}
+
+.register{
+  background-color: #bfadd9;
+  border-color: #bfadd9;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.register:hover{
+  background-color: #8b65bf;
+  color: white;
+}
+
+.form_button{
+  width: 100%;
+  text-align: center;
+  margin: 0px;
 }
