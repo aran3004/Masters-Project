@@ -7,7 +7,7 @@ web3 = Web3(Web3.HTTPProvider(ganache_url))
 
 # Set up the contract
 # contract_address = web3.to_checksum_address("0xfb66B39B74a6e2059725efd4411780C90749636C")
-contract_address = web3.to_checksum_address("0x88C3CE4777861c5C103E46A8B0849d1Ab1e27c11")
+contract_address = web3.to_checksum_address("0x56d4228eE9088E150b21377589145540E04d00eE")
 
 # Load contract ABI
 with open('FileStorageABI.json', 'r') as abi_definition:
