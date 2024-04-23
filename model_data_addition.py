@@ -11,12 +11,17 @@ import os
 
 # Initialize Web3
 web3 = Web3(Web3.HTTPProvider("http://127.0.0.1:7545"))
-contract_address = web3.to_checksum_address("0x88C3CE4777861c5C103E46A8B0849d1Ab1e27c11")
+file_storage_address = web3.to_checksum_address("0x9FDdA4a90A70536A4e871f255BA0679184eDa58B")
+contributions_address = web3.to_checksum_address("0x0215Cf2a37dFAd5d8651E4834431d0ba8FEd66EB")
 
-# Load the contract ABI
+# Load the contract ABIs
 with open('FileStorageABI.json', 'r') as file:
-    contract_abi = json.load(file)
-contract = web3.eth.contract(address=contract_address, abi=contract_abi)
+    file_storage_abi = json.load(file)
+file_storage_contract = web3.eth.contract(address=file_storage_address, abi=file_storage_abi)
+
+with open('ClientContributionsABI.json', 'r') as file:
+    contributions_abi = json.load(file)
+contributions_contract = web3.eth.contract(address=contributions_address, abi=contributions_abi)
 
 # Set seeds for reproducibility
 torch.manual_seed(0)
@@ -72,88 +77,26 @@ def train_and_evaluate(model, train_loader, test_loader, epochs=5):
 
 
 def fetch_all_client_data_paths():
-    client_addresses = contract.functions.getAllClientAddresses().call()
+    # Fetching all client data paths from the FileStorage contract
+    client_addresses = file_storage_contract.functions.getAllClientAddresses().call()
     dataset_paths = []
     addresses = []
     for address in client_addresses:
-        contributions = contract.functions.getAllContributionsForClient(address).call()
-        for data in contributions:
-            dataset_paths.append(data[1])  # Fetching dataset paths
-            addresses.append(address)      # Store the corresponding address
+        num_files = file_storage_contract.functions.getClientFileCount(address).call()
+        for i in range(num_files):
+            data_path = file_storage_contract.functions.getClientData(address, i).call()
+            print(f'Data Path {i} : {data_path}')
+            addresses.append(address)
+            dataset_paths.append(data_path)
     return dataset_paths, addresses
 
-
-def update_blockchain_contributions(address, contributions, data_path):
+def update_blockchain_contributions(address, contributions):
     """
     Updates or adds new client contributions to the blockchain.
     :param address: Ethereum address of the client
     :param contributions: Array of contributions to update
-    :param data_path: Path of the dataset used
     """
-    # Fetch existing contributions for the client
-    client_contributions = contract.functions.getAllContributionsForClient(address).call()
-    if len(client_contributions) > 0:
-        # Assume you want to update the first entry for simplicity
-        contract.functions.updateClientContributions(address, 0, contributions).transact({'from': web3.eth.default_account})
-    else:
-        # Add new client data if no contributions exist yet
-        contract.functions.addClientData(contributions, data_path).transact({'from': web3.eth.default_account})
-
-# def calculate_reward_and_matrix():
-#     dataset_paths, client_addresses = fetch_all_client_data_paths()
-#     client_datasets = [prepare_dataset(pd.read_csv(path)) for path in dataset_paths if os.path.exists(path)]
-#     test_df = pd.read_csv('mnist-test/mnist_test.csv')
-#     test_dataset = prepare_dataset(test_df)
-#     test_loader = DataLoader(test_dataset, batch_size=64, shuffle=False)
-
-#     incremental_dataset = None
-#     incremental_f1_scores = []
-
-#     for i, client_data in enumerate(client_datasets):
-#         if incremental_dataset is None:
-#             incremental_dataset = client_data
-#         else:
-#             incremental_dataset = ConcatDataset([incremental_dataset, client_data])
-
-#         train_loader = DataLoader(incremental_dataset, batch_size=64, shuffle=True)
-#         model = NeuralNetwork()
-#         accuracy, confusion, precision, recall, f1_score = train_and_evaluate(model, train_loader, test_loader)
-#         incremental_f1_scores.append(f1_score)
-#         final_confusion_matrix = confusion
-
-#         print(f'Incremental accuracy after adding client {i+1}: {accuracy:.2f}%')
-#         print("Metrics per class:")
-#         print(pd.DataFrame({
-#             'Precision': precision,
-#             'Recall': recall,
-#             'F1 Score': f1_score
-#         }, index=[f'Class {j}' for j in range(len(precision))]))
-#         print("\n")
-
-#     # Calculate the total improvement for each class from the initial to the final client
-#     f1_df = pd.DataFrame(incremental_f1_scores, columns=[f'Class {i}' for i in range(10)])
-#     f1_df['Client'] = [f'Client {i+1}' for i in range(len(client_datasets))]
-#     f1_df.set_index('Client', inplace=True)
-
-#     initial_f1 = np.zeros(10)
-#     total_improvement = f1_df.iloc[-1] - initial_f1
-
-#     # Calculate the incremental improvements and set negative increments to zero
-#     incremental_improvements = f1_df.diff().fillna(f1_df.iloc[0]).clip(lower=0)
-
-#     # Calculate percentage contributions for each class
-#     percentage_contributions = (incremental_improvements.divide(total_improvement, axis=1) * 100).fillna(0)
-
-#     print("Client Contributions to F1 Score Improvement:")
-#     print(percentage_contributions)
-
-#     # Print the final confusion matrix
-#     print("Final Confusion Matrix:")
-#     print(final_confusion_matrix)
-#     print(type(final_confusion_matrix))
-#     matrix_list = final_confusion_matrix.tolist()
-#     return percentage_contributions, matrix_list
-
+    contributions_contract.functions.setContributions(address, contributions).transact({'from': web3.eth.default_account})
 
 
 def calculate_reward_and_matrix():
@@ -215,11 +158,20 @@ def calculate_reward_and_matrix():
     # Handle NaN values explicitly before conversion
     summed_contributions = summed_contributions.fillna(0).astype(int)
 
+    # Assuming `summed_contributions` is the DataFrame from your reward and matrix function
+    for client_address in summed_contributions.index:
+        # Fetch the contribution values for the current client, converting each to integer
+        contributions_array = [int(contribution) for contribution in summed_contributions.loc[client_address].values]
+        tx_hash = contributions_contract.functions.setContributions(client_address, contributions_array).transact({'from': client_address})
+        tx_receipt = web3.eth.wait_for_transaction_receipt(tx_hash)
+        
+        # Optional: Print out the transaction receipt or some confirmation message
+        print(f"Contributions updated for {client_address}. Transaction hash: {tx_hash.hex()}")
+
+
     print("Normalized Contributions to F1 Score Improvement by Client:")
     print(summed_contributions)
 
     print("Final Confusion Matrix:")
     print(confusion)
     return summed_contributions, confusion.tolist()
-
-# calculate_reward_and_matrix()
