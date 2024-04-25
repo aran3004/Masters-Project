@@ -17,8 +17,8 @@ with open('ClientContributionsABI.json', 'r') as contributions_abi_file:
     contributions_abi = json.load(contributions_abi_file)
 
 # Contract addresses
-file_storage_contract_address = web3.to_checksum_address("0x9FDdA4a90A70536A4e871f255BA0679184eDa58B")
-contributions_contract_address = web3.to_checksum_address("0x0215Cf2a37dFAd5d8651E4834431d0ba8FEd66EB")
+file_storage_contract_address = web3.to_checksum_address("0x49cbF6595A522AA113f9036Eb9f5D8Be666d6eAF")
+contributions_contract_address = web3.to_checksum_address("0x2301966a1C4eA1c8E138ceA8e33EC3727d5C9e09")
 
 # Contract instances
 file_storage_contract = web3.eth.contract(address=file_storage_contract_address, abi=file_storage_abi)
@@ -53,9 +53,10 @@ def mnist():
 
     last_updated_value = file_storage_contract.functions.getLastUpdated().call()
     client_addresses = file_storage_contract.functions.getAllClientAddresses().call()
+    accuracy = file_storage_contract.functions.getAccuracy().call()
     number_contributors = len(client_addresses)
     print(f'Number of contributors: {len(client_addresses)}')
-    return render_template('mnist.html', confusion_matrix=preprocessed_data, last_updated=last_updated_value, contributors = number_contributors)
+    return render_template('mnist.html', confusion_matrix=preprocessed_data, last_updated=last_updated_value, contributors = number_contributors, accuracy=accuracy)
 
 @app.route('/contribute', methods=['POST', 'GET'])
 def contribute():
@@ -91,6 +92,16 @@ def contribute():
 
         return redirect('/models')
     return render_template('contribute.html')
+
+@app.route('/query', methods=['POST', 'GET'])
+def query():
+    if request.method == 'POST':
+        return redirect('/distribute')
+    return render_template('query.html')
+
+@app.route('/distribute')
+def distribute():
+    return render_template('distribute.html')
 
 if __name__ == '__main__':
     app.run(debug=True)

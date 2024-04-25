@@ -1,5 +1,19 @@
 [
   {
+    "inputs": [],
+    "name": "accuracy",
+    "outputs": [
+      {
+        "internalType": "string",
+        "name": "",
+        "type": "string"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function",
+    "constant": true
+  },
+  {
     "inputs": [
       {
         "internalType": "uint256",
@@ -72,6 +86,33 @@
   {
     "inputs": [],
     "name": "lastUpdated",
+    "outputs": [
+      {
+        "internalType": "string",
+        "name": "",
+        "type": "string"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function",
+    "constant": true
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "string",
+        "name": "_accuracy",
+        "type": "string"
+      }
+    ],
+    "name": "setAccuracy",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getAccuracy",
     "outputs": [
       {
         "internalType": "string",

@@ -175,3 +175,7 @@ tr:hover, td:hover {
   text-align: center;
   margin: 0px;
 }
+
+.button-container{
+  display: flex;
+}

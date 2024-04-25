@@ -1,0 +1,29 @@
+{%extends 'base2.html'%} {%block title%}Query{%endblock%} {%block content%}
+<div class="login_page">
+  <h1 class="center">Upload your Image for Prediction</h1>
+  <p>
+    For the purposes of this demonstration, each query will be for a single
+    image from MNIST. The cost of making a query is 1ETH just to show the reward
+    ditribution clearer
+  </p>
+  <div class="uploaded_style container-styling">
+    <form id="dataForm" method="post" enctype="multipart/form-data">
+      <input type="hidden" id="clientAddress" name="clientAddress" />
+      <div class="center">
+        <label for="file" class="drop-container" id="dropcontainer"
+          >Upload Image:
+          <span class="drop-title">Drop Image Here</span>
+          or
+          <input type="file" id="file" name="file" accept=".csv" required />
+        </label>
+      </div>
+      <div>
+        <button class="link_button register form_button" type="submit">
+          Continue
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+{%endblock%}
