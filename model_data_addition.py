@@ -8,11 +8,12 @@ from sklearn.metrics import confusion_matrix, precision_recall_fscore_support
 from web3 import Web3
 import json
 import os
+from model_architecture import NeuralNetwork
 
 # Initialize Web3
 web3 = Web3(Web3.HTTPProvider("http://127.0.0.1:7545"))
-file_storage_address = web3.to_checksum_address("0x9FDdA4a90A70536A4e871f255BA0679184eDa58B")
-contributions_address = web3.to_checksum_address("0x0215Cf2a37dFAd5d8651E4834431d0ba8FEd66EB")
+file_storage_address = web3.to_checksum_address("0x49cbF6595A522AA113f9036Eb9f5D8Be666d6eAF")
+contributions_address = web3.to_checksum_address("0x2301966a1C4eA1c8E138ceA8e33EC3727d5C9e09")
 
 # Load the contract ABIs
 with open('FileStorageABI.json', 'r') as file:
@@ -29,19 +30,19 @@ np.random.seed(0)
 if torch.cuda.is_available():
     torch.cuda.manual_seed_all(0)
 
-class NeuralNetwork(nn.Module):
-    def __init__(self):
-        super(NeuralNetwork, self).__init__()
-        self.flatten = nn.Flatten()
-        self.linear_relu_stack = nn.Sequential(
-            nn.Linear(28 * 28, 512),  # MNIST images are 28x28
-            nn.ReLU(),
-            nn.Linear(512, 10)  # 10 classes for MNIST digits
-        )
+# class NeuralNetwork(nn.Module):
+#     def __init__(self):
+#         super(NeuralNetwork, self).__init__()
+#         self.flatten = nn.Flatten()
+#         self.linear_relu_stack = nn.Sequential(
+#             nn.Linear(28 * 28, 512),  # MNIST images are 28x28
+#             nn.ReLU(),
+#             nn.Linear(512, 10)  # 10 classes for MNIST digits
+#         )
 
-    def forward(self, x):
-        x = self.flatten(x)
-        return self.linear_relu_stack(x)
+#     def forward(self, x):
+#         x = self.flatten(x)
+#         return self.linear_relu_stack(x)
 
 def prepare_dataset(df):
     X = df.iloc[:, 1:].values / 255.0
@@ -73,6 +74,9 @@ def train_and_evaluate(model, train_loader, test_loader, epochs=5):
     cmatrix = confusion_matrix(all_labels, all_preds)
     precision, recall, f1_score, _ = precision_recall_fscore_support(all_labels, all_preds, zero_division=0)
     accuracy = np.trace(cmatrix) / np.sum(cmatrix) * 100
+
+    torch.save(model.state_dict(), 'saved_models/final_model.pth')
+
     return accuracy, cmatrix, precision, recall, f1_score
 
 
@@ -119,6 +123,7 @@ def calculate_reward_and_matrix():
 
     incremental_dataset = None
     incremental_f1_scores = []
+    final_accuracy = 0
 
     # Process each client dataset
     for i, client_data in enumerate(client_datasets):
@@ -133,6 +138,7 @@ def calculate_reward_and_matrix():
         # Evaluate the model
         accuracy, confusion, precision, recall, f1_score = train_and_evaluate(model, train_loader, test_loader)
         incremental_f1_scores.append(f1_score)
+        final_accuracy = accuracy
         print(f'Incremental accuracy after adding client {client_addresses[i]}: {accuracy:.2f}%')
         print("Metrics per class:")
         print(pd.DataFrame({
@@ -174,4 +180,10 @@ def calculate_reward_and_matrix():
 
     print("Final Confusion Matrix:")
     print(confusion)
+    accuracy_str = str(final_accuracy) + "%"
+    print('Final Accuracy to be added to the Blockchain: ' + accuracy_str)
+    tx_hash = file_storage_contract.functions.setAccuracy(accuracy_str).transact({'from': client_address})
     return summed_contributions, confusion.tolist()
+
+
+# calculate_reward_and_matrix()

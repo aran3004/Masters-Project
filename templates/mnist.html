@@ -27,6 +27,9 @@ content%}
   <p>
     <em>Number of Contributors: {{contributors}}</em>
   </p>
+  <p>
+    <em>Model Accuracy: {{accuracy}}</em>
+  </p>
 </div>
 <div>
   <h1>Confusion Matrix</h1>
@@ -53,7 +56,10 @@ content%}
   </table>
 </div>
 
-<a href="/contribute" class="connect_wallet_button">Contribute to Model</a>
+<div class="button-container">
+  <a href="/contribute" class="connect_wallet_button">Contribute to Model</a>
+  <a href="/query" class="connect_wallet_button">Query the Model</a>
+</div>
 
 <!-- Include Web3.js library -->
 <script src="https://cdn.jsdelivr.net/npm/web3@1.5.0/dist/web3.min.js"></script>

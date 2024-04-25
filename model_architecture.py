@@ -5,13 +5,12 @@ class NeuralNetwork(nn.Module):
     def __init__(self):
         super(NeuralNetwork, self).__init__()
         self.flatten = nn.Flatten()
-        self.fc1 = nn.Linear(28*28, 128)
-        self.fc2 = nn.Linear(128, 256)
-        self.fc3 = nn.Linear(256, 10)
-    
+        self.linear_relu_stack = nn.Sequential(
+            nn.Linear(28 * 28, 512),  # MNIST images are 28x28
+            nn.ReLU(),
+            nn.Linear(512, 10)  # 10 classes for MNIST digits
+        )
+
     def forward(self, x):
         x = self.flatten(x)
-        x = F.relu(self.fc1(x))
-        x = F.relu(self.fc2(x))
-        x = self.fc3(x)
-        return x
+        return self.linear_relu_stack(x)
