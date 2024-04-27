@@ -7,6 +7,33 @@
     image from MNIST. The cost of making a query is 1ETH just to show the reward
     ditribution clearer
   </p>
+  <h1>Distributed MNIST Images</h1>
+  <div class="image-grid">
+    {% for image_data, predict, contribution in zip(images, predicted,
+    contributions) %}
+    <div class="image-container">
+      <img src="data:image/png;base64,{{ image_data }}" />
+      <p class="image-info">Predicted Value: {{ predict }}</p>
+      <!-- <p class="image-info">{{ contribution }}</p> -->
+      <table class="contributions-table">
+        <thead>
+          <tr>
+            <th>Client Address</th>
+            <th>Contribution</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for client, contrib in contribution.items() %}
+          <tr>
+            <td>{{ client }}</td>
+            <td>{{ contrib }}%</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% endfor %}
+  </div>
 </div>
 
 {%endblock%}

@@ -179,3 +179,33 @@ tr:hover, td:hover {
 .button-container{
   display: flex;
 }
+
+.image-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  padding: 10px;
+}
+img {
+  width: 100%;
+  height: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+.image-info {
+  text-align: center;
+}
+
+.contributions-table {
+  margin-top: 10px;
+  width: 100%;
+  border-collapse: collapse;
+}
+.contributions-table th, .contributions-table td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: left;
+}
+.contributions-table th {
+  background-color: #f4f4f4;
+}

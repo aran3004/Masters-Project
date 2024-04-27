@@ -5,36 +5,65 @@ from model_data_addition import prepare_dataset
 import pandas as pd
 from torch.utils.data import DataLoader
 import matplotlib.pyplot as plt
-
-model = NeuralNetwork()
-model.load_state_dict(torch.load('saved_models/final_model.pth'))
-model.eval()
+from web3 import Web3
+import json
 
 
-distribution_dataset = prepare_dataset(pd.read_csv('mnist_for_distribution.csv'))
-distribution_loader = DataLoader(distribution_dataset, batch_size=64, shuffle=False)
+# Connect to Ganache
+ganache_url = "HTTP://127.0.0.1:7545"
+web3 = Web3(Web3.HTTPProvider(ganache_url))
 
+# Load contract ABIs
+with open('FileStorageABI.json', 'r') as file_storage_abi_file:
+    file_storage_abi = json.load(file_storage_abi_file)
+with open('ClientContributionsABI.json', 'r') as contributions_abi_file:
+    contributions_abi = json.load(contributions_abi_file)
 
+# Contract addresses
+file_storage_contract_address = web3.to_checksum_address("0x49cbF6595A522AA113f9036Eb9f5D8Be666d6eAF")
+contributions_contract_address = web3.to_checksum_address("0x2301966a1C4eA1c8E138ceA8e33EC3727d5C9e09")
 
-# Loop through the data_loader
-for inputs, labels in distribution_loader:
-    # Assume inputs and labels are torch tensors
-    with torch.no_grad():  # Disable gradient calculation for inference
-        outputs = model(inputs)
-        _, predicted = torch.max(outputs, 1)  # Get the index of the max log-probability
+# Contract instances
+file_storage_contract = web3.eth.contract(address=file_storage_contract_address, abi=file_storage_abi)
+contributions_contract = web3.eth.contract(address=contributions_contract_address, abi=contributions_abi)
 
-    # Print actual and predicted values
-    for label, prediction in zip(labels, predicted):
-        print(f'Actual label: {label.item()} - Predicted label: {prediction.item()}')
+def predictions(filename):
 
-display_dataset = pd.read_csv('mnist_for_distribution.csv')
+    model = NeuralNetwork()
+    model.load_state_dict(torch.load('saved_models/final_model.pth'))
+    model.eval()
 
-labels = display_dataset.iloc[:, 0].values  # Extract labels if present
-images = display_dataset.iloc[:, 1:].values  # Extract image data
+    distribution_dataset = prepare_dataset(pd.read_csv(filename))
+    distribution_loader = DataLoader(distribution_dataset, batch_size=64, shuffle=False)
+    predictions = []
+    contributions = []
 
-# Reshape the image data and plot the first few images
-for i in range(10):  # Adjust the range to display more or fewer images
-    image = images[i].reshape(28, 28)
-    plt.imshow(image, cmap='gray')
-    plt.title(f'Label: {labels[i]}')
-    plt.show()
+    for inputs, labels in distribution_loader:
+        with torch.no_grad():  # Disable gradient calculation for inference
+            outputs = model(inputs)
+            _, predicted = torch.max(outputs, 1)  # Get the index of the max log-probability
+
+        # Print actual and predicted values
+        for label, prediction in zip(labels, predicted):
+            predictions.append(prediction.item())
+    
+    return predictions
+
+def fetch_contributions():
+    # Fetch all client addresses
+    client_addresses = file_storage_contract.functions.getAllClientAddresses().call()
+    
+    # Dictionary to hold contributions data structured by class
+    class_contributions = {i: {} for i in range(10)}  # Assuming 10 classes
+
+    # Iterate over each client and fetch their contributions
+    for address in client_addresses:
+        contributions = contributions_contract.functions.getContributions(address).call()
+        # Structure contributions by class
+        for class_index in range(len(contributions)):
+            if address not in class_contributions[class_index]:
+                class_contributions[class_index][address] = contributions[class_index]
+            else:
+                class_contributions[class_index][address] += contributions[class_index]
+
+    return class_contributions
