@@ -1,10 +1,18 @@
-from flask import Flask, render_template, request, redirect, make_response, session
+from flask import Flask, render_template, request, redirect, make_response, session, url_for
 from web3 import Web3
 from werkzeug.utils import secure_filename
 from datetime import datetime
 import os
 import json
 from model_data_addition import calculate_reward_and_matrix
+import base64
+from io import BytesIO
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import matplotlib
+from distribution import predictions, fetch_contributions
+matplotlib.use('Agg')  # Ensure this is set to prevent GUI issues
 
 # Connect to Ganache
 ganache_url = "HTTP://127.0.0.1:7545"
@@ -25,6 +33,7 @@ file_storage_contract = web3.eth.contract(address=file_storage_contract_address,
 contributions_contract = web3.eth.contract(address=contributions_contract_address, abi=contributions_abi)
 
 app = Flask(__name__)
+app.jinja_env.globals.update(zip=zip)
 app.secret_key = 'my_masters_project_code'
 ALLOWED_EXTENSIONS = {'csv'}
 
@@ -96,12 +105,47 @@ def contribute():
 @app.route('/query', methods=['POST', 'GET'])
 def query():
     if request.method == 'POST':
-        return redirect('/distribute')
+        client_address = request.form['clientAddress']
+        client_address = web3.to_checksum_address(client_address)
+        file = request.files['file']
+        if file and allowed_file(file.filename):
+            filename = secure_filename(file.filename)
+            return redirect(url_for('distribute', filename=filename, client_address=client_address))
     return render_template('query.html')
 
 @app.route('/distribute')
 def distribute():
-    return render_template('distribute.html')
+    filename = request.args.get('filename')
+    client_address = request.args.get('client_address')
+    if not filename:
+        return "No file provided", 400
+    
+    df = pd.read_csv(filename)
+    images = df.drop('label', axis=1).values
+
+    encoded_images = []
+    predicted = predictions(filename=filename)
+    fetched_contributions = fetch_contributions()
+    contributions = []  # List to store contributions info
+
+    for i in range(len(images)):
+        image = images[i].reshape(28, 28)
+        buf = BytesIO()
+        plt.figure(figsize=(1, 1))
+        plt.imshow(image, cmap='gray')
+        plt.axis('off')
+        plt.savefig(buf, format='png', bbox_inches='tight', pad_inches=0)
+        plt.close()
+        buf.seek(0)
+        # Encode the buffer to a base64 string
+        base64_image = base64.b64encode(buf.getvalue()).decode('utf-8')
+        encoded_images.append(base64_image)
+        
+        class_index = predicted[i]
+        current_contributions = fetched_contributions.get(class_index, {})
+        contributions.append(current_contributions)
+
+    return render_template('distribute.html', images=encoded_images, predicted=predicted, contributions=contributions)
 
 if __name__ == '__main__':
     app.run(debug=True)
