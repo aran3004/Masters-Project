@@ -1,20 +1,68 @@
-{%extends 'base.html'%} {%block title%}Home{%endblock%} {%block content%}
-<h2>Description of Masters Project</h2>
-<p>
-  This project is focused on creating a web application that aims to
-  decentralize artificial intelligence (AI). By leveraging the principles of
-  federated learning and blockchain technology, the goal is to allow
-  participants to contribute their data to train a base AI model
-  collaboratively. The MNIST dataset, a foundational dataset in the field of
-  machine learning, serves as the starting point for this initiative.
-  Participants can join the project, contribute their MNIST data for model
-  training, and potentially improve the model's accuracy. Improvements to the
-  model are validated and then recorded on the blockchain, ensuring transparency
-  and integrity in the model's development process.
-</p>
-<a href="/models" id="connectMetaMask" class="connect_wallet_button"
-  >Connect to MetaMask Wallet to Continue</a
->
+{%extends 'base.html'%} {%block title%}Omnia{%endblock%} {%block content%}
 
+<main>
+  <section class="hero">
+    <h1>Semi-Centralised Collaborative AI Model Training.</h1>
+    <p>
+      A semi-centralized platform that enables you to contribute your data to ML
+      and AI models while receiving rewards through our equitable and unique
+      payment distribution system.
+    </p>
+    <a href="/models" id="connectMetaMask">
+      <button class="btn btn-large">Get Started</button>
+    </a>
+  </section>
+</main>
+<div class="features-section">
+  <h2>Key Features</h2>
+  <div class="features-grid">
+    <div class="feature">
+      <h3>Collaborate on AI Models</h3>
+      <p>
+        A brief description of what this feature offers and how it benefits the
+        users.
+      </p>
+    </div>
+    <div class="feature">
+      <h3>Powered by Blockchain</h3>
+      <p>
+        Explanation of the second feature, emphasizing its value and uniqueness.
+      </p>
+    </div>
+    <div class="feature">
+      <h3>Build Better Models</h3>
+      <p>
+        Details about the third feature, including why it is important to the
+        platform.
+      </p>
+    </div>
+    <div class="feature">
+      <h3>ML for Everyone</h3>
+      <p>
+        A concise description of the fourth feature and how it supports users'
+        goals.
+      </p>
+    </div>
+  </div>
+</div>
+<div class="cta-section">
+  <h2>Make the Most of Your Data</h2>
+  <p>
+    Explore and deploy models efficiently, leveraging the power of our platform
+    to unlock the full potential of your data.
+  </p>
+  <div class="cta-buttons">
+    <a href="/models" id="connectMetaMask">
+      <button class="btn btn-cta">Explore Models</button>
+    </a>
+    <div class="btn-container">
+      <button class="btn btn-cta">Deploy Models</button>
+      <div class="tooltip">
+        <span class="material-symbols-outlined"> block </span>
+        <span class="tooltip-text">This feature isn't available yet</span>
+      </div>
+    </div>
+  </div>
+</div>
 <script src="{{url_for('static', filename='connectWallet.js')}}"></script>
 {%endblock%}

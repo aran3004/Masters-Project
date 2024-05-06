@@ -12,8 +12,8 @@ from model_architecture import NeuralNetwork
 
 # Initialize Web3
 web3 = Web3(Web3.HTTPProvider("http://127.0.0.1:7545"))
-file_storage_address = web3.to_checksum_address("0x49cbF6595A522AA113f9036Eb9f5D8Be666d6eAF")
-contributions_address = web3.to_checksum_address("0x2301966a1C4eA1c8E138ceA8e33EC3727d5C9e09")
+file_storage_address = web3.to_checksum_address("0xdc0e43e25ba2A572319eAAe6Bee21DB17DA16c73")
+contributions_address = web3.to_checksum_address("0xAE461517c0c6c05586B32f65F1238FcDD401421a")
 
 # Load the contract ABIs
 with open('FileStorageABI.json', 'r') as file:
