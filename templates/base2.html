@@ -11,20 +11,51 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Raleway:ital,wght@0,100..900;1,100..900&display=swap"
       rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0"
     />
   </head>
   <body>
-    <div class="center-and-space info">
-      <div class="account-info">
-        <p>Account: <span id="account">Loading...</span></p>
-        <p>Balance: <span id="balance">Loading...</span></p>
-        <a href="/" class="connect_wallet_button disconnect-button"
-          >Disconnect Wallet</a
-        >
+    <header>
+      <div class="nav-bar">
+        <nav>
+          <div>
+            <a href="/" class="logo">Omnio</a>
+          </div>
+          <div>
+            <a
+              href="/models"
+              class="{% if current_path == '/models' %}selected-page{% endif %}"
+              >Models</a
+            >
+            <a
+              href="/about"
+              class="{% if current_path == '/about' %}selected-page{% endif %}"
+              >About</a
+            >
+          </div>
+        </nav>
+        <div class="login-section">
+          <button class="btn" id="viewAccountBtn">View Account</button>
+          <!-- Dropdown content for account and balance -->
+          <div class="dropdown-content" id="accountDropdown">
+            <p class="account-text">Account:</p>
+            <p><span id="account" class="account-subtext">Loading...</span></p>
+            <p class="account-text">Balance:</p>
+            <p><span id="balance" class="account-subtext">Loading...</span></p>
+            <a href="/"
+              ><button class="btn" id="viewAccountBtn">
+                Disconnect Wallet
+              </button></a
+            >
+          </div>
+        </div>
       </div>
-    </div>
+    </header>
     <div class="center-and-space">{% block content%} {%endblock%}</div>
     <!-- <script src="{{url_for('static', filename='script.js')}}"></script> -->
     <!-- Include Web3.js library -->
@@ -32,5 +63,15 @@
 
     <!-- Your JavaScript code -->
     <script src="{{ url_for('static', filename='displayInfo.js') }}"></script>
+    <script>
+      // Add an event listener to toggle the dropdown visibility
+      document
+        .getElementById("viewAccountBtn")
+        .addEventListener("click", function () {
+          const dropdown = document.getElementById("accountDropdown");
+          dropdown.style.display =
+            dropdown.style.display === "none" ? "block" : "none";
+        });
+    </script>
   </body>
 </html>
