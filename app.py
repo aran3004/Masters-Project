@@ -113,8 +113,8 @@ def query():
 def distribute():
     filename = request.args.get('filename')
     client_address = request.args.get('client_address')
-    if not filename:
-        return "No file provided", 400
+    if not os.path.exists(filename):
+        return redirect('/models')
     
     df = pd.read_csv(filename)
     images = df.drop('label', axis=1).values
