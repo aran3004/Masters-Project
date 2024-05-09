@@ -113,6 +113,7 @@ def query():
 def distribute():
     filename = request.args.get('filename')
     client_address = request.args.get('client_address')
+    # covering the case when page reloads
     if not os.path.exists(filename):
         return redirect('/models')
     
