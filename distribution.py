@@ -7,25 +7,9 @@ from torch.utils.data import DataLoader
 import matplotlib.pyplot as plt
 from web3 import Web3
 import json
+from intialise_web3 import initilise_web3_contracts
 
-
-# Connect to Ganache
-ganache_url = "HTTP://127.0.0.1:7545"
-web3 = Web3(Web3.HTTPProvider(ganache_url))
-
-# Load contract ABIs
-with open('FileStorageABI.json', 'r') as file_storage_abi_file:
-    file_storage_abi = json.load(file_storage_abi_file)
-with open('ClientContributionsABI.json', 'r') as contributions_abi_file:
-    contributions_abi = json.load(contributions_abi_file)
-
-# Contract addresses
-file_storage_contract_address = web3.to_checksum_address("0xdc0e43e25ba2A572319eAAe6Bee21DB17DA16c73")
-contributions_contract_address = web3.to_checksum_address("0xAE461517c0c6c05586B32f65F1238FcDD401421a")
-
-# Contract instances
-file_storage_contract = web3.eth.contract(address=file_storage_contract_address, abi=file_storage_abi)
-contributions_contract = web3.eth.contract(address=contributions_contract_address, abi=contributions_abi)
+web3, file_storage_contract, contributions_contract = initilise_web3_contracts()
 
 def predictions(filename):
 
@@ -65,5 +49,5 @@ def fetch_contributions():
                 class_contributions[class_index][address] = contributions[class_index]
             else:
                 class_contributions[class_index][address] += contributions[class_index]
-
+    print(class_contributions)
     return class_contributions
