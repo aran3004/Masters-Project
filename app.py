@@ -12,25 +12,13 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib
 from distribution import predictions, fetch_contributions
+from intialise_web3 import initilise_web3_contracts
 matplotlib.use('Agg')  # Ensure this is set to prevent GUI issues
 
-# Connect to Ganache
-ganache_url = "HTTP://127.0.0.1:7545"
-web3 = Web3(Web3.HTTPProvider(ganache_url))
 
-# Load contract ABIs
-with open('FileStorageABI.json', 'r') as file_storage_abi_file:
-    file_storage_abi = json.load(file_storage_abi_file)
-with open('ClientContributionsABI.json', 'r') as contributions_abi_file:
-    contributions_abi = json.load(contributions_abi_file)
 
-# Contract addresses
-file_storage_contract_address = web3.to_checksum_address("0xdc0e43e25ba2A572319eAAe6Bee21DB17DA16c73")
-contributions_contract_address = web3.to_checksum_address("0xAE461517c0c6c05586B32f65F1238FcDD401421a")
-
-# Contract instances
-file_storage_contract = web3.eth.contract(address=file_storage_contract_address, abi=file_storage_abi)
-contributions_contract = web3.eth.contract(address=contributions_contract_address, abi=contributions_abi)
+# Initialize Web3 Contracts
+web3, file_storage_contract, contributions_contract = initilise_web3_contracts()
 
 app = Flask(__name__)
 app.jinja_env.globals.update(zip=zip)
@@ -114,7 +102,11 @@ def query():
         file = request.files['file']
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
-            return redirect(url_for('distribute', filename=filename, client_address=client_address))
+            temp_path = os.path.join('temporary', filename)
+            file.save(temp_path)
+            return redirect(url_for('distribute', filename=temp_path, client_address=client_address))
+
+
     return render_template('query.html')
 
 @app.route('/distribute')
@@ -148,7 +140,8 @@ def distribute():
         class_index = predicted[i]
         current_contributions = fetched_contributions.get(class_index, {})
         contributions.append(current_contributions)
-
+    
+    os.remove(filename)
     return render_template('distribute.html', images=encoded_images, predicted=predicted, contributions=contributions)
 
 if __name__ == '__main__':
