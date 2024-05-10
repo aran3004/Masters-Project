@@ -547,7 +547,60 @@ tr:hover, td:hover {
 }
 
 
+.btn-large.center {
+  display: block; /* Makes the button a block element */
+  margin: 40px auto; /* Vertically spaces and centers the button horizontally */
+  width: 50%; /* Adjust the width as needed */
+  text-align: center; /* Ensures text within the button is centered */
+  font-size: 20px; /* Bigger text inside the button */
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1); /* Subtle shadow for depth */
+}
 
+a{
+  text-decoration: none;
+}
+
+.private-key-form {
+  max-width: 500px;
+  margin: 40px auto;  /* Centers the form horizontally */
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background: #f9f9f9;
+  text-align: center;  /* Ensures that the label, input, and button are centered */
+}
+
+.private-key-form label {
+  display: block;
+  margin-bottom: 10px;
+  font-size: 16px;
+}
+
+.private-key-form input[type="password"] {
+  width: 80%;  /* Adjust width as needed */
+  padding: 10px;
+  margin-bottom: 20px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  display: block;  /* Ensures the input takes its own line */
+  margin: 0 auto;  /* Centers the input field horizontally */
+}
+
+.private-key-form button {
+  padding: 10px 20px;
+  font-size: 16px;
+  color: #fff;
+  background-color: #0056b3;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  display: block;  /* Ensures the button takes its own line */
+  margin: 20px auto;  /* Centers the button horizontally and adds space above */
+}
+
+.private-key-form button:hover {
+  background-color: #004494;
+}
 
 
 
