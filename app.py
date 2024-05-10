@@ -109,10 +109,11 @@ def query():
 
     return render_template('query.html')
 
-@app.route('/distribute')
+@app.route('/distribute', methods=['POST', 'GET'])
 def distribute():
     filename = request.args.get('filename')
     client_address = request.args.get('client_address')
+
     # covering the case when page reloads
     if not os.path.exists(filename):
         return redirect('/models')
@@ -124,6 +125,7 @@ def distribute():
     predicted = predictions(filename=filename)
     fetched_contributions = fetch_contributions()
     contributions = []  # List to store contributions info
+    client_credits = {}  # Dictionary to store total credits due to each client
 
     for i in range(len(images)):
         image = images[i].reshape(28, 28)
@@ -140,10 +142,83 @@ def distribute():
         
         class_index = predicted[i]
         current_contributions = fetched_contributions.get(class_index, {})
+
+        # Calculate credits for each client based on current contributions
+        for client, percentage in current_contributions.items():
+            actual_credit = 1 * (percentage / 100)  # Converting percentage to a fraction of 1 Ethereum
+            if client not in client_credits:
+                client_credits[client] = actual_credit  # Initialize if not already in dictionary
+            else:
+                client_credits[client] += actual_credit  # Add actual credit for this image
+
         contributions.append(current_contributions)
     
     os.remove(filename)
-    return render_template('distribute.html', images=encoded_images, predicted=predicted, contributions=contributions)
+
+    total_credits = 0
+    # Print out the credits due to each client
+    for client, credits in client_credits.items():
+        print(f"Client {client}: {credits} Ethereum")
+        total_credits +=credits
+
+    print(f'Total credits required for payment: {total_credits}')
+    formatted_credits = "{:.2f}".format(total_credits)
+
+    session['total_credits'] = total_credits
+    session['client_credits'] = client_credits
+    session['payee'] = client_address
+
+    return render_template('distribute.html', images=encoded_images, predicted=predicted, contributions=contributions, total_credits=formatted_credits)
+
+
+@app.route('/payment_distributed', methods=['POST'])
+def payment_distributed():
+    print('Starting payment')
+    private_key = request.form['privateKey']
+    payee = session.get('payee', '')
+    print(f"payee: {payee}")
+    total_credits = session.get('total_credits', 0)
+    client_credits = session.get('client_credits', {})
+
+    try:
+        for client, credits in client_credits.items():
+            # Ensure credits are in Wei if dealing with Ether
+            credits_in_wei = web3.to_wei(credits, 'ether')
+
+            # Transaction details
+            nonce = web3.eth.get_transaction_count(payee)
+            tx = {
+                'nonce': nonce,
+                'to': client,  # Client's account address
+                'value': credits_in_wei,  # Amount of Ether to send
+                'gas': 2000000,
+                'gasPrice': web3.to_wei('50', 'gwei')
+            }
+            # Sign the transaction
+            signed_tx = web3.eth.account.sign_transaction(tx, private_key)
+
+            # Send the transaction
+            tx_hash = web3.eth.send_raw_transaction(signed_tx.rawTransaction)
+            print(f"Transaction sent to {client}, hash: {tx_hash.hex()}")
+
+            # Wait for the transaction to be mined (optional)
+            tx_receipt = web3.eth.wait_for_transaction_receipt(tx_hash)
+            print(f"Transaction to {client} completed with receipt: {tx_receipt}")
+
+    except Exception as e:
+        print(f"An error occurred during payment distribution: {str(e)}")
+
+
+    print(f'Total credits required for payment: {total_credits}')
+    print('Client Credits:', client_credits)
+    print('Payment would have been distributed')
+
+
+    session.pop("payee", None)
+    session.pop("total_credits", None)
+    session.pop("client_credits", None)
+    return redirect('/models')
+
 
 if __name__ == '__main__':
     app.run(debug=True)

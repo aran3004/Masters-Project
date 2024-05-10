@@ -49,5 +49,5 @@ def fetch_contributions():
                 class_contributions[class_index][address] = contributions[class_index]
             else:
                 class_contributions[class_index][address] += contributions[class_index]
-    print(class_contributions)
+    # print(class_contributions)
     return class_contributions

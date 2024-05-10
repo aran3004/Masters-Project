@@ -26,4 +26,26 @@ contract ClientContributions {
     ) public view returns (uint256[10] memory) {
         return contributions[client];
     }
+
+    // Function to transfer Ether from this contract to a specified recipient
+    function transferEther(address payable recipient, uint256 amount) public {
+        require(
+            address(this).balance >= amount,
+            "Insufficient balance to transfer"
+        );
+        // Perform the transfer
+        (bool success, ) = recipient.call{value: amount}("");
+        require(success, "Failed to send Ether");
+    }
+
+    // Fallback function to accept Ether when sent to the contract
+    receive() external payable {}
+
+    // Function to allow manual sending of Ether to the contract
+    function depositEther() public payable {}
+
+    // Function to check the contract's balance
+    function getBalance() public view returns (uint256) {
+        return address(this).balance;
+    }
 }

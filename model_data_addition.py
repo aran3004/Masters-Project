@@ -175,29 +175,38 @@ def calculate_reward_and_matrix():
         full_accuracy, full_cmatrix, full_precision, full_recall = train_and_evaluate_heterogenous(model, full_loader, test_loader, final=True)
         contributions_df = pd.DataFrame(index=[f'Class {i}' for i in range(10)], columns=client_addresses)
 
-
-        for excluded_client in range(len(client_datasets)):
-            reduced_data = [data for i, data in enumerate(client_datasets) if i != excluded_client]
-            reduced_loader = DataLoader(ConcatDataset(reduced_data), batch_size=64, shuffle=True)
+        if len(client_datasets) == 1:
+            # Evaluate the single client dataset
+            train_loader = DataLoader(client_datasets[0], batch_size=64, shuffle=True)
             model = NeuralNetwork()
-            reduced_accuracy, reduced_cmatrix, reduced_precision, reduced_recall = train_and_evaluate_heterogenous(model, reduced_loader, test_loader)
+            accuracy, cmatrix, precision, recall, f1_score = train_and_evaluate(model, train_loader, test_loader)
+            contributions = [100 if f > 0 else 0 for f in f1_score]  # 100% contribution to classes with F1 score > 0
 
-            print(f'Accuracy after removing client {client_addresses[excluded_client]}: {reduced_accuracy:.2f}%')
-            full_diag = full_cmatrix.diagonal()
-            reduced_diag = reduced_cmatrix.diagonal()
+            contributions_df.iloc[:, 0] = contributions
 
-            # Safely calculate contributions
-            contribution = np.zeros_like(full_diag)
-            for i in range(len(full_diag)):
-                if full_diag[i] != 0:
-                    contribution[i] = (full_diag[i] - reduced_diag[i]) / full_diag[i]
-                    # Ensure no negative contributions
-                    if contribution[i] < 0:
-                        contribution[i] = 0
-                else:
-                    contribution[i] = 0  
+        else:
+            for excluded_client in range(len(client_datasets)):
+                reduced_data = [data for i, data in enumerate(client_datasets) if i != excluded_client]
+                reduced_loader = DataLoader(ConcatDataset(reduced_data), batch_size=64, shuffle=True)
+                model = NeuralNetwork()
+                reduced_accuracy, reduced_cmatrix, reduced_precision, reduced_recall = train_and_evaluate_heterogenous(model, reduced_loader, test_loader)
 
-            contributions_df.iloc[:, excluded_client] = contribution * 100  # Convert to percentage
+                print(f'Accuracy after removing client {client_addresses[excluded_client]}: {reduced_accuracy:.2f}%')
+                full_diag = full_cmatrix.diagonal()
+                reduced_diag = reduced_cmatrix.diagonal()
+
+                # Safely calculate contributions
+                contribution = np.zeros_like(full_diag)
+                for i in range(len(full_diag)):
+                    if full_diag[i] != 0:
+                        contribution[i] = (full_diag[i] - reduced_diag[i]) / full_diag[i]
+                        # Ensure no negative contributions
+                        if contribution[i] < 0:
+                            contribution[i] = 0
+                    else:
+                        contribution[i] = 0  
+
+                contributions_df.iloc[:, excluded_client] = contribution * 100  # Convert to percentage
 
         # Normalize contributions to distribute 100 credits per class
         normalized_credits = contributions_df.apply(normalize_credits, axis=1)
@@ -219,8 +228,6 @@ def calculate_reward_and_matrix():
         for client_address in summed_contributions.index:
             # Fetch the contribution values for the current client, converting each to integer
             contributions_array = [int(contribution) for contribution in summed_contributions.loc[client_address].values]
-            print(client_address)
-            print(contributions_array)
             tx_hash = contributions_contract.functions.setContributions(client_address, contributions_array).transact({'from': client_address})
             tx_receipt = web3.eth.wait_for_transaction_receipt(tx_hash)
             print(f"Contributions updated for {client_address}. Transaction hash: {tx_hash.hex()}")
@@ -299,4 +306,5 @@ def calculate_reward_and_matrix():
         print('Final Accuracy to be added to the Blockchain: ' + accuracy_str)
         tx_hash = file_storage_contract.functions.setAccuracy(accuracy_str).transact({'from': client_address})
         return summed_contributions, confusion.tolist()
-    
+
+# calculate_reward_and_matrix()

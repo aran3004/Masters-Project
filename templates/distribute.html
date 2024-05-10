@@ -37,6 +37,13 @@
       {% endfor %}
     </div>
   </div>
+  <form action="/payment_distributed" method="post" class="private-key-form">
+    <label for="privateKey">Enter Private Key:</label>
+    <input type="password" id="privateKey" name="privateKey" required />
+    <button type="submit" class="btn">
+      Simulate Payment Distribution ({{total_credits}} ETH Required)
+    </button>
+  </form>
 </main>
 
 {%endblock%}
