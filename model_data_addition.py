@@ -119,6 +119,10 @@ def update_blockchain_contributions(address, contributions):
     """
     contributions_contract.functions.setContributions(address, contributions).transact({'from': web3.eth.default_account})
 
+def pareto_weights(alpha, num_clients):
+    x_m = 1  # Scale parameter (minimum value)
+    weights = np.array([(alpha * (x_m ** alpha)) / (x ** (alpha + 1)) for x in range(1, num_clients + 1)])
+    return weights / weights.sum()
 
 def calculate_reward_and_matrix():
     # Fetch paths and addresses
@@ -276,7 +280,13 @@ def calculate_reward_and_matrix():
         initial_f1 = np.zeros(10)
         total_improvement = f1_df.iloc[-1] - initial_f1
         incremental_improvements = f1_df.diff().fillna(f1_df.iloc[0]).clip(lower=0)
-        percentage_contributions = (incremental_improvements.divide(total_improvement.replace(0, np.nan), axis=1) * 100).fillna(0)
+
+        weights = pareto_weights(1.5, len(client_datasets))
+        weighted_improvements = incremental_improvements.multiply(weights, axis=0)
+
+        total_weighted_improvement = weighted_improvements.sum()
+
+        percentage_contributions = (incremental_improvements.divide(total_weighted_improvement.replace(0, np.nan), axis=1) * 100).fillna(0)
         print(percentage_contributions)
 
         # Sum and normalize contributions for each client
