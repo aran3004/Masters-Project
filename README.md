@@ -2,6 +2,8 @@
 
 This project aims to combine collaborative AI ideas and Ethereum Blockchain to create a 'stepping stone' platform towards a fully decentralised one. The platform utilises the Flask framework to communicate between the Blockchain, smart contract and front-end.
 
+Video Demo: https://youtu.be/ZM0_MdadJFo
+
 # Project Structure
 **build**: Auto-generated when soldity files are migrated to the blockchain <br />
 **contracts**: Contain the solidity smart contract files for updating confusion matrices, contribution distributions, model metrics and payment methods <br />
