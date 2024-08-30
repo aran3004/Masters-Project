@@ -25,7 +25,7 @@ jobs:
       - name: Install dependencies and restart Flask app
         run: |
           ssh -o StrictHostKeyChecking=no ec2-user@16.171.226.63 << 'EOF'
-          cd ~/my_flask_app
+          cd ~/MastersProjectCode
           source venv/bin/activate
           pip install -r requirements.txt
           pkill gunicorn || true
