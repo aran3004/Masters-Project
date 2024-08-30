@@ -1,0 +1,49 @@
+{%extends 'base2.html'%} {%block title%}Distribution Demonstration{%endblock%}
+{%block content%}
+
+<main class="content-container">
+  <div class="distribution-page">
+    <h1 class="center">Distribution Demonstration</h1>
+    <p>
+      For the purposes of this demonstration, each query will be for a single
+      image from MNIST. The cost of making a query is 1ETH to clearly show the
+      reward distribution.
+    </p>
+
+    <h2 class="center">Distributed MNIST Images</h2>
+    <div class="image-grid">
+      {% for image_data, predict, contribution in zip(images, predicted,
+      contributions) %}
+      <div class="image-container">
+        <img src="data:image/png;base64,{{ image_data }}" alt="MNIST Image" />
+        <p class="image-info">Predicted Value: {{ predict }}</p>
+        <table class="contributions-table">
+          <thead>
+            <tr>
+              <th>Client Address</th>
+              <th>Contribution</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for client, contrib in contribution.items() %}
+            <tr>
+              <td>{{ client }}</td>
+              <td>{{ contrib }}%</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  <form action="/payment_distributed" method="post" class="private-key-form">
+    <label for="privateKey">Enter Private Key:</label>
+    <input type="password" id="privateKey" name="privateKey" required />
+    <button type="submit" class="btn">
+      Simulate Payment Distribution ({{total_credits}} ETH Required)
+    </button>
+  </form>
+</main>
+
+{%endblock%}

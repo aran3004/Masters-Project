@@ -1,1 +1,3 @@
-/datasets
+datasets/
+temporary/
+.DS_Store

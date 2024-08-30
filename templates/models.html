@@ -1,0 +1,33 @@
+{%extends 'base2.html'%} {%block title%}AI Models{%endblock%} {%block content%}
+<main>
+  <h2>Contribute to AI Models</h2>
+  <section class="models-section">
+    <p>
+      If you have data that could improve other AI models, contribute it and, if
+      your data improves the current model, the model will be updated. For each
+      request of the model, you will be rewarded according to your data
+      contribution to the model.
+    </p>
+    <div class="models-wrapper">
+      <!-- Model Example -->
+      <a href="/mnist" class="model-container">
+        <strong class="model-title">MNIST Dataset</strong>
+        <p><em>Classification</em></p>
+        <p>
+          The MNIST dataset is a large collection of handwritten digits widely
+          used for training and testing.
+        </p>
+      </a>
+      <!-- Placeholder Models -->
+      <a href="/models" class="model-container">
+        <strong class="model-title">Model to be added</strong>
+        <p>Due to early stages, other models are still yet to be developed.</p>
+      </a>
+      <a href="/models" class="model-container">
+        <strong class="model-title">Model to be added</strong>
+        <p>Due to early stages, other models are still yet to be developed.</p>
+      </a>
+    </div>
+  </section>
+</main>
+{%endblock%}

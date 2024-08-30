@@ -1,0 +1,47 @@
+{% extends 'base2.html' %} {% block title %}Upload Data{% endblock %} {% block
+content %}
+
+<main class="content-container">
+  <div class="upload-page">
+    <h1 class="center">Upload Your Data</h1>
+    <div class="form-container">
+      <form id="dataForm" method="post" enctype="multipart/form-data">
+        <input type="hidden" id="clientAddress" name="clientAddress" />
+        <label for="file" class="drop-container" id="dropcontainer">
+          <span class="material-symbols-outlined"> upload_file </span>
+          <span class="drop-title">Select a file</span>
+          <input
+            type="file"
+            id="file"
+            name="file"
+            accept=".csv"
+            required
+            onchange="displayFileName()"
+          />
+          <div class="file-name" id="fileNameDisplay"></div>
+        </label>
+        <div class="form-buttons">
+          <button class="btn btn-large form-button" type="submit">
+            Continue
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</main>
+
+<!-- JavaScript function to update file label -->
+<script>
+  function displayFileName() {
+    var fileInput = document.getElementById("file");
+    var fileNameDisplay = document.getElementById("fileNameDisplay");
+
+    if (fileInput.files.length > 0) {
+      fileNameDisplay.textContent = "Selected file: " + fileInput.files[0].name;
+    } else {
+      fileNameDisplay.textContent = "";
+    }
+  }
+</script>
+
+{% endblock %}

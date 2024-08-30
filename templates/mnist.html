@@ -1,0 +1,57 @@
+{%extends 'base2.html'%} {%block title%}MNIST Dataset{%endblock%} {%block
+content%}
+<main class="content-container">
+  <div>
+    <h2><strong class="model-title">MNIST Dataset</strong></h2>
+    <p><em>Classification</em></p>
+    <p>
+      Description: The MNIST dataset is a large collection of handwritten digits
+      widely used for training and testing in the field of machine learning.
+      Comprising 60,000 training images and 10,000 test images, this dataset
+      serves as the benchmark for evaluating the performance of image processing
+      systems. The simplicity of the MNIST dataset makes it an ideal starting
+      point for any machine learning project, including ours, which focuses on
+      the decentralized training of AI models. By starting with MNIST, we can
+      establish a foundational model that can later be expanded to more complex
+      datasets and challenges.
+    </p>
+    <p><em>Last Contribution: {{last_updated}}</em></p>
+    <p><em>Number of Contributors: {{contributors}}</em></p>
+    <p><em>Model Accuracy: {{accuracy}}</em></p>
+  </div>
+
+  <div class="confusion-matrix">
+    <h3>Confusion Matrix</h3>
+    <table>
+      <thead>
+        <tr>
+          <th></th>
+          {% for class_num in range(10) %}
+          <th>Class {{ class_num }}</th>
+          {% endfor %}
+        </tr>
+      </thead>
+      <tbody>
+        {% for i, row in confusion_matrix %}
+        <tr>
+          <th>Class {{ i }}</th>
+          {% for value in row %}
+          <td>{{ value }}</td>
+          {% endfor %}
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <div class="button-container">
+    <a href="/contribute"
+      ><button class="btn btn-large">Contribute to Model</button></a
+    >
+    <a href="/query"><button class="btn btn-large">Query the Model</button></a>
+  </div>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/web3@1.5.0/dist/web3.min.js"></script>
+<script src="{{ url_for('static', filename='displayInfo.js') }}"></script>
+{%endblock%}

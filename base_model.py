@@ -138,8 +138,34 @@ web3 = Web3(Web3.HTTPProvider(ganache_url))
 web3.is_connected()  # Should return True
 
 # Set up the contract
-contract_address = web3.to_checksum_address("0xfb66B39B74a6e2059725efd4411780C90749636C")
+# contract_address = web3.to_checksum_address("0xfb66B39B74a6e2059725efd4411780C90749636C")
+contract_address = web3.to_checksum_address("0x71Ec77cdD098cEB33Ab073a5829C03E1e4125eb2")
 contract_abi = [
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "name": "confusionMatrix",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function",
+      "constant": true
+    },
     {
       "inputs": [],
       "name": "fileName",
@@ -152,7 +178,7 @@ contract_abi = [
       ],
       "stateMutability": "view",
       "type": "function",
-      "constant": True
+      "constant": true
     },
     {
       "inputs": [],
@@ -166,7 +192,7 @@ contract_abi = [
       ],
       "stateMutability": "view",
       "type": "function",
-      "constant": True
+      "constant": true
     },
     {
       "inputs": [],
@@ -180,7 +206,7 @@ contract_abi = [
       ],
       "stateMutability": "view",
       "type": "function",
-      "constant": True
+      "constant": true
     },
     {
       "inputs": [
@@ -212,7 +238,7 @@ contract_abi = [
       ],
       "stateMutability": "view",
       "type": "function",
-      "constant": True
+      "constant": true
     },
     {
       "inputs": [],
@@ -226,7 +252,7 @@ contract_abi = [
       ],
       "stateMutability": "view",
       "type": "function",
-      "constant": True
+      "constant": true
     },
     {
       "inputs": [],
@@ -240,7 +266,62 @@ contract_abi = [
       ],
       "stateMutability": "view",
       "type": "function",
-      "constant": True
+      "constant": true
+    },
+    {
+      "inputs": [],
+      "name": "initializeConfusionMatrix",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "row",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "col",
+          "type": "uint256"
+        }
+      ],
+      "name": "getConfusionMatrixValue",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function",
+      "constant": true
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "row",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "col",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "value",
+          "type": "uint256"
+        }
+      ],
+      "name": "updateConfusionMatrix",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
     }
   ]
 
