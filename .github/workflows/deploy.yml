@@ -20,11 +20,11 @@ jobs:
 
       - name: Copy files to EC2
         run: |
-          scp -o StrictHostKeyChecking=no -r * ec2-user@16.171.226.63:~/MastersProjectCode/
+          scp -o StrictHostKeyChecking=no -r * ec2-user@13.51.206.202:~/MastersProjectCode/
 
       - name: Install dependencies and restart Flask app
         run: |
-          ssh -o StrictHostKeyChecking=no ec2-user@16.171.226.63 << 'EOF'
+          ssh -o StrictHostKeyChecking=no ec2-user@13.51.206.202 << 'EOF'
           cd ~/MastersProjectCode
           source venv/bin/activate
           pip install -r requirements.txt
